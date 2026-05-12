@@ -1,0 +1,53 @@
+const googleMapsApiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || '';
+
+module.exports = {
+  expo: {
+    name: 'Travels',
+    slug: 'travels',
+    version: '1.0.0',
+    orientation: 'portrait',
+    icon: './assets/icon.png',
+    userInterfaceStyle: 'light',
+    newArchEnabled: true,
+    splash: {
+      image: './assets/splash-icon.png',
+      resizeMode: 'contain',
+      backgroundColor: '#ffffff',
+    },
+    ios: {
+      supportsTablet: true,
+      config: {
+        googleMapsApiKey,
+      },
+    },
+    android: {
+      package: 'com.travels.travelsapp',
+      adaptiveIcon: {
+        foregroundImage: './assets/adaptive-icon.png',
+        backgroundColor: '#ffffff',
+      },
+      permissions: [
+        'ACCESS_FINE_LOCATION',
+        'ACCESS_COARSE_LOCATION',
+        'FOREGROUND_SERVICE',
+        'NOTIFICATIONS',
+      ],
+      config: {
+        googleMaps: {
+          apiKey: googleMapsApiKey,
+        },
+      },
+    },
+    plugins: [
+      [
+        'expo-notifications',
+        {
+          sounds: ['default'],
+        },
+      ],
+    ],
+    web: {
+      favicon: './assets/favicon.png',
+    },
+  },
+};

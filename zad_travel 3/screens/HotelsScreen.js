@@ -5,8 +5,7 @@ import {
   Keyboard, Alert, StyleSheet
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBObjLCJHs4koxphtaHmthPfhf7X-06nPE';
+import { GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_KEY_ERROR, hasGoogleMapsApiKey } from '../config/googleMaps';
 
 export default function HotelsScreen() {
   const [address, setAddress] = useState('');
@@ -15,6 +14,11 @@ export default function HotelsScreen() {
   const [loading, setLoading] = useState(false);
 
   const fetchCoords = async () => {
+    if (!hasGoogleMapsApiKey()) {
+      Alert.alert('Błąd konfiguracji', GOOGLE_MAPS_KEY_ERROR);
+      return;
+    }
+
     if (!address.trim()) {
       Alert.alert('Błąd', 'Wprowadź adres lub miasto');
       return;
