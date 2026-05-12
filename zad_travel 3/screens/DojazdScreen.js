@@ -6,8 +6,7 @@ import {
 } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
-
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBObjLCJHs4koxphtaHmthPfhf7X-06nPE';
+import { GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_KEY_ERROR, hasGoogleMapsApiKey } from '../config/googleMaps';
 
 export default function DojazdScreen() {
   const [origin, setOrigin] = useState('');
@@ -49,6 +48,11 @@ export default function DojazdScreen() {
   };
 
   const fetchRoute = async (originCoords, destinationCoords) => {
+    if (!hasGoogleMapsApiKey()) {
+      Alert.alert('Błąd konfiguracji', GOOGLE_MAPS_KEY_ERROR);
+      return;
+    }
+
     const originStr = `${originCoords.latitude},${originCoords.longitude}`;
     const destinationStr = `${destinationCoords.latitude},${destinationCoords.longitude}`;
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destinationStr}&key=${GOOGLE_MAPS_API_KEY}&mode=${mode}`;

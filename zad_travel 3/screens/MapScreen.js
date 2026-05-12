@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, View, ActivityIndicator, Dimensions } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Text } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import 'react-native-get-random-values';
+import { GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_KEY_ERROR, hasGoogleMapsApiKey } from '../config/googleMaps';
 
 export default function MapScreen() {
   const [region, setRegion] = useState(null);
@@ -13,13 +14,16 @@ export default function MapScreen() {
   const mapRef = useRef(null);
 
 
-  const GOOGLE_API_KEY = 'AIzaSyBObjLCJHs4koxphtaHmthPfhf7X-06nPE';
-
   const fetchNearbyPlaces = async (latitude, longitude) => {
     const radius = 5000; // 5 км
     const type = 'tourist_attraction';
 
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=${type}&key=${GOOGLE_API_KEY}`;
+    if (!hasGoogleMapsApiKey()) {
+      console.warn(GOOGLE_MAPS_KEY_ERROR);
+      return [];
+    }
+
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=${type}&key=${GOOGLE_MAPS_API_KEY}`;
 
     try {
       const response = await fetch(url);
@@ -83,6 +87,14 @@ export default function MapScreen() {
     fetchNearbyPlaces(newRegion.latitude, newRegion.longitude).then(setPlaces);
   };
 
+  if (!hasGoogleMapsApiKey()) {
+    return (
+      <View style={styles.messageContainer}>
+        <Text style={styles.messageText}>{GOOGLE_MAPS_KEY_ERROR}</Text>
+      </View>
+    );
+  }
+
   if (loading || !region) {
     return (
       <View style={styles.container}>
@@ -98,7 +110,7 @@ export default function MapScreen() {
         fetchDetails={true}
         onPress={onPlaceSelected}
         query={{
-          key: GOOGLE_API_KEY,
+          key: GOOGLE_MAPS_API_KEY,
           language: 'pl',
         }}
         styles={{
@@ -155,5 +167,17 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  messageContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    backgroundColor: '#fff',
+  },
+  messageText: {
+    color: '#991b1b',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
